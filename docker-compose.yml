@@ -1,0 +1,12 @@
+version: '3'
+services:
+  clash:
+    build: .
+    ports:
+        - "8000:8000"
+        - "7890:7890"
+        - "7891:7891"
+        - "9090:9090"
+    volumes:
+        - ./pac:/pac
+        - ./config.yaml:/root/.config/clash/config.yaml

@@ -8,9 +8,13 @@ RUN go mod download && \
     make linux-amd64 && \
     mv ./bin/clash-linux-amd64 /clash
 
-FROM alpine:latest
+
+#FROM alpine:latest
+FROM python:3.8.2-alpine3.11
 
 RUN apk add --no-cache ca-certificates
 COPY --from=builder /Country.mmdb /root/.config/clash/
 COPY --from=builder /clash /
-ENTRYPOINT ["/clash"]
+RUN mkdir -p /whitelist
+COPY ./start.sh /
+ENTRYPOINT ["/start.sh"]

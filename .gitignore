@@ -20,3 +20,9 @@ vendor
 
 # macOS file
 .DS_Store
+
+#clash config
+config.yaml
+
+#pac
+*.pac

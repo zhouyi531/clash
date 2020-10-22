@@ -1,0 +1,109 @@
+# HTTP 端口
+port: 7890
+
+# SOCKS5 端口
+socks-port: 7891
+
+# Linux 及 macOS 的 redir 端口
+# redir-port: 7892
+
+allow-lan: true
+bind-address: "*"
+
+# Rule / Global/ Direct (默认为 Rule 模式)
+mode: Rule
+
+# 设置日志等级 (默认为 info)
+# info / warning / error / debug / silent
+log-level: info
+
+# RESTful API for clash
+external-controller: 0.0.0.0:9090
+
+# experimental feature
+experimental:
+  ignore-resolve-fail: true # ignore dns resolve fail, default value is true
+
+# DNS 设置
+dns:
+  enable: true
+  listen: 0.0.0.0:53
+  enhanced-mode: fake-ip
+  nameserver:
+    - 119.29.29.29
+    - 223.5.5.5
+
+# 代理节点
+Proxy:
+  # Shadowsocks
+  - {
+      name: "1",
+      type: ss,
+      server: 185.194.148.153,
+      port: 6000,
+      cipher: rc4-md5,
+      password: bluesky,
+    }
+  - {
+      name: "2",
+      type: ss,
+      server: bljhome.ddns.net,
+      port: 53182,
+      cipher: chacha20-ietf-poly1305,
+      password: ForZeroy,
+    }
+
+  # VMess
+  - name: "4"
+    type: vmess
+    server: 123.smartbytes.jp
+    port: 443
+    uuid: e3bf67a4-5914-49fd-aa71-246f37d1c24b
+    alterId: 32
+    cipher: auto
+    udp: true
+    tls: true
+    # skip-cert-verify: true
+    network: ws
+    ws-path: /ray
+    ws-headers:
+      Host: 123.smartbytes.jp
+
+# 代理组策略
+Proxy Group:
+  # 注意，不同于 Surge，后面要用到的策略组要放到前面
+
+  # url-test 通过指定的 URL 测试并选择延迟最低的节点
+  - name: "UrlTest"
+    type: url-test
+    proxies:
+      - "1"
+      - "2"
+    url: "http://www.gstatic.com/generate_204"
+    interval: 300
+
+  # fallback 通过指定的 URL 测试并选择可用的节点，当 1 故障不可用时自动切换到 2 以此类推
+  - name: "Fallback"
+    type: fallback
+    proxies:
+      - "1"
+      - "2"
+    url: "http://www.gstatic.com/generate_204"
+    interval: 300
+
+  # 代理节点选择
+  - name: "PROXY"
+    type: select
+    proxies:
+      - "Fallback"
+
+  - name: "Hijacking"
+    type: select
+    proxies:
+      - "REJECT"
+      - "DIRECT"
+
+# 规则
+Rule:
+  - GEOIP,CN,Fallback
+  - MATCH,Fallback
